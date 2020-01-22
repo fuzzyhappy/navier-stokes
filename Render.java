@@ -22,8 +22,7 @@ public class Render extends JPanel implements ActionListener, MouseMotionListene
 	static int drawSize = 6;
 	static Color col = new Color(255,255,255), bgCol = new Color(0,0,0);
 	boolean leftMouseDown = false, rightMouseDown = false;
-	static boolean normalMode = true, fireMode = false, rainbowMode = false;
-	static boolean drawVectorField = false, drawFluid = true, rightEnabled = false;
+	static boolean drawVectorField = true, drawFluid = true, rightEnabled = false;
 	
 	public Render(){
 		time.start();
@@ -40,13 +39,10 @@ public class Render extends JPanel implements ActionListener, MouseMotionListene
 			for(int y=0;y<NavierStokesSolver.N+2;y++){
 				for(int x=0;x<NavierStokesSolver.N+2;x++){
 					double density = (int)(255*solver.dense[boxNo(x,y)]);
-					if(normalMode){
-						if(density >= 255){
-							density = 255;
-						}
-						g.setColor(new Color(col.getRed(),col.getGreen(),col.getBlue(),(int)density));
+					if(density >= 255){
+						density = 255;
 					}
-					
+					g.setColor(new Color(col.getRed(),col.getGreen(),col.getBlue(),(int)density));
 					
 					g.fillRect(x*drawSize,y*drawSize,drawSize,drawSize);
 				}

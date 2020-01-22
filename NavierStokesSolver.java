@@ -35,19 +35,14 @@ public class NavierStokesSolver {
     void tick(double dt, double visc, double diff) {
         vel_step(u, v, u_prev, v_prev, visc, dt);
         dens_step(dense, dense_prev, u, v, diff, dt);
+
     }
 
     void vel_step(double[] u, double[] v, double[] u0, double[] v0, double visc,
                   double dt) {
-        add_source(u, u0, dt);
-        add_source(v, v0, dt);
-        SWAP(u0, u);
-        diffuse(1, u, u0, visc, dt);
-        SWAP(v0, v);
-        diffuse(2, v, v0, visc, dt);
-        project(u, v, u0, v0);
-        SWAP(u0, u);
-        SWAP(v0, v);
+        diffuse(1, u0, u, visc, dt);
+        diffuse(2, v0, v, visc, dt);
+        project(u0, v0, u, v);
         advect(1, u, u0, u0, v0, dt);
         advect(2, v, v0, u0, v0, dt);
         project(u, v, u0, v0);
@@ -55,10 +50,7 @@ public class NavierStokesSolver {
 
     void dens_step(double[] x, double[] x0, double[] u, double[] v, double diff,
                    double dt) {
-        //add_source(x, x0, dt);
-        SWAP(x0, x);
-        diffuse(0, x, x0, diff, dt);
-        SWAP(x0, x);
+        diffuse(0, x0, x, diff, dt);
         advect(0, x, x0, u, v, dt);
     }
  
@@ -69,13 +61,6 @@ public class NavierStokesSolver {
         u[INDEX(cellX, cellY)] = (vx != 0) ? vx : dx;
         v[INDEX(cellX, cellY)] = (vy != 0) ? vy : dy;
  
-    }
-
- 
-    void add_source(double[] x, double[] s, double dt) {
-        int i, size = (N + 2) * (N + 2);
-        for (i = 0; i < size; i++)
-            x[i] += dt * s[i];
     }
  
     void diffuse(int b, double[] x, double[] x0, double diff, double dt) {
@@ -90,8 +75,9 @@ public class NavierStokesSolver {
                             / (1 + 4 * a);
                 }
             }
-            set_bnd(b, x);
+            //set_bnd(b, x);
         }
+        //set_bnd(b, x);
     }
  
     void advect(int b, double[] d, double[] d0, double[] u, double[] v, double dt) {
@@ -122,7 +108,7 @@ public class NavierStokesSolver {
                         + s1 * (t0 * d0[INDEX(i1, j0)] + t1 * d0[INDEX(i1, j1)]);
             }
         }
-        set_bnd(b, d);
+        //set_bnd(b, d);
     }
  
     void set_bnd(int b, double[] x) {
